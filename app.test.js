@@ -13,23 +13,30 @@ describe("Test Hello World", () => {
     })
 })
 
-describe("get repos", () => {
+describe("/repos Get Pull Requests", () => {
     describe("given an owner and repo", () => {
+
         test("should respond with a 200 status code", async () => {
-            const response = await request(app).get("/")
+            const response = await request(app).get("/repos").query({ owner: "twbs", "repo": "bootstrap" })
             expect(response.statusCode).toBe(200)
         })
-        // should respond with array of pull requests for that repository
-        // response should contain array of objects with the following properties
-        //     id: 1,
-        //     number: 100,
-        //     title: "Tile of Pull Request 1",
-        //     author: "Author of Pull Request 1",
-        //     commit_count: 8
+        test("response should contain array of objects with the following properties", async () => {
+            const response = await request(app).get("/repos").query({ owner: "twbs", "repo": "bootstrap" })
+            expect(response.body[0]).toMatchSnapshot({
+                id: expect.any(Number),
+                number: expect.any(Number),
+                title: expect.any(String),
+                author: expect.any(String),
+                commit_count: expect.any(Number)
+            })
 
-        // should have json content type header
-
+        })
     })
+    // 
+
+
+    // should have json content type header
+
 
     // describe("when the owner is missing", () => {
     //     // should respond with 400 status code
