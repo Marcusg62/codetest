@@ -18,23 +18,45 @@ router.get('/',
             const config = {
                 method: 'get',
                 url: `https://api.github.com/repos/${req.query.owner}/${req.query.repo}/pulls`,
-                headers: {}
+                headers: {
+                    'Authorization': 'Basic bWFyY3VzZzYyOmdocF9RVFRFT21hTVgxMHl5dGxrVkdwSDFBYlVWOHpvSVIxd1ZpekQ='
+                }
             };
             let response = await axios(config);
-            response.data = response.data.map(pr => {
-                console.log('pr', pr)
-                
-                return {
-                    id: pr.id,
-                    number: pr.number,
-                    title: pr.title,
-                    author: pr.author, // to do: fetch details from user field
-                    commit_count: pr.commit_count // to do: fetch commit count _links .commits.href
-                };
-            });
-            res.send(response.data) // TO DO: how to paginate? default length is 30
+            let pullRequests = [];
+
+            for (pr of response.data) {
+                try {
+                    let commits = await axios({
+                        method: "get",
+                        url: pr.commits_url,
+                        headers: {
+                            'Authorization': 'Basic bWFyY3VzZzYyOmdocF9RVFRFT21hTVgxMHl5dGxrVkdwSDFBYlVWOHpvSVIxd1ZpekQ=' // to do: set config vars
+                        }
+                    })
+                    pullRequests.push({
+                        id: pr.id,
+                        number: pr.number,
+                        title: pr.title,
+                        author: pr.user.login,
+                        commit_count: commits.data.length
+                    })
+                } catch (error) {
+                    pullRequests.push({
+                        id: pr.id,
+                        number: pr.number,
+                        title: pr.title,
+                        author: pr.user.login, 
+                        commit_count: -1 // if error, just return -1
+                    })
+                }
+
+            }
+
+            res.send(pullRequests) // TO DO: how to paginate? default length is 30
         }
         catch (error) {
+            console.log('error', error)
             return res.sendStatus(500).send(error);
         }
 
