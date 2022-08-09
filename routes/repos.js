@@ -19,7 +19,7 @@ router.get('/',
                 method: 'get',
                 url: `https://api.github.com/repos/${req.query.owner}/${req.query.repo}/pulls`,
                 headers: {
-                    'Authorization': 'Basic bWFyY3VzZzYyOmdocF9RVFRFT21hTVgxMHl5dGxrVkdwSDFBYlVWOHpvSVIxd1ZpekQ='
+                    'Authorization': 'Basic bWFyY3VzZzYyOmdocF9BVEJJSk1IN29WbnZ2ZjZ4TFNvMWpLdWsyNGt1M2UyeXBTY28='
                 }
             };
             let response = await axios(config);
@@ -31,7 +31,7 @@ router.get('/',
                         method: "get",
                         url: pr.commits_url,
                         headers: {
-                            'Authorization': 'Basic bWFyY3VzZzYyOmdocF9RVFRFT21hTVgxMHl5dGxrVkdwSDFBYlVWOHpvSVIxd1ZpekQ=' // to do: set config vars
+                            'Authorization': 'Basic bWFyY3VzZzYyOmdocF9BVEJJSk1IN29WbnZ2ZjZ4TFNvMWpLdWsyNGt1M2UyeXBTY28=' // to do: set config vars
                         }
                     })
                 )
