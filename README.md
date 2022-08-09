@@ -3,8 +3,8 @@
 ## This simple API is built with Node JS and Express with testing suite Jest
 
 # Endpoints
-## / - Hello World test endpoint
-## /repos - retrives a github repository's pull requests with information as specified in assignment
+    - / - Hello World test endpoint
+    - /repos - retrives a github repository's pull requests with information as specified in assignment
 
 # How to run
 1. Clone Repo
