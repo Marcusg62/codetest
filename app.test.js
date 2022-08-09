@@ -22,34 +22,36 @@ describe("/repos Get Pull Requests", () => {
         })
         test("response should contain array of objects with the following properties", async () => {
             const response = await request(app).get("/repos").query({ owner: "twbs", "repo": "bootstrap" })
-            expect(response.body[0]).toMatchSnapshot({
+            expect(response.body[0]).toEqual({
                 id: expect.any(Number),
                 number: expect.any(Number),
                 title: expect.any(String),
                 author: expect.any(String),
                 commit_count: expect.any(Number)
             })
-
         })
     })
-    // 
 
 
-    // should have json content type header
+    describe("when the owner is missing", () => {
+        test("should send 400 status code", async () => {
+            const response = await request(app).get("/repos").query({ "repo": "bootstrap" })
+            expect(response.statusCode).toBe(400)
+        })
+    })
 
+    describe("when the owner is missing", () => {
+        test("should send 400 status code", async () => {
+            const response = await request(app).get("/repos").query({ "owner": "twbs" })
+            expect(response.statusCode).toBe(400)
+        })
+    })
 
-    // describe("when the owner is missing", () => {
-    //     // should respond with 400 status code
-
-    // })
-
-    // describe("when the repo is missing", () => {
-    //     // should respond with 400 status code
-    // })
-
-    // describe("When the repo is not found", () => {
-    //     // should respond with 404? status code 
-
-    // })
+    describe("when the owner is missing", () => {
+        test("should send 400 status code", async () => {
+            const response = await request(app).get("/repos").query({ "repo": "bootstrap" })
+            expect(response.statusCode).toBe(400)
+        })
+    })
 
 })

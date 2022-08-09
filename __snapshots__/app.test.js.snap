@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`/repos Get Pull Requests given an owner and repo response should contain array of objects with the following properties 1`] = `
-Object {
-  "id": Any<Number>,
-  "number": 36915,
-  "title": "Use es6 on visual tests",
-}
-`;

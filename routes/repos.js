@@ -7,7 +7,7 @@ const { query, validationResult } = require('express-validator');
 router.get('/',
     query('owner').notEmpty(), // express-validator middleware
     query('repo').notEmpty(), // express-validator middleware
-    async (req, res, next) => {
+    async (req, res) => {
         try {
             // send error message if required query params are not present
             const errors = validationResult(req);
@@ -23,41 +23,37 @@ router.get('/',
                 }
             };
             let response = await axios(config);
-            let pullRequests = [];
 
+            let promisesArray = []
             for (pr of response.data) {
-                try {
-                    let commits = await axios({
+                promisesArray.push(
+                    axios({
                         method: "get",
                         url: pr.commits_url,
                         headers: {
                             'Authorization': 'Basic bWFyY3VzZzYyOmdocF9RVFRFT21hTVgxMHl5dGxrVkdwSDFBYlVWOHpvSVIxd1ZpekQ=' // to do: set config vars
                         }
                     })
-                    pullRequests.push({
-                        id: pr.id,
-                        number: pr.number,
-                        title: pr.title,
-                        author: pr.user.login,
-                        commit_count: commits.data.length
-                    })
-                } catch (error) {
-                    pullRequests.push({
-                        id: pr.id,
-                        number: pr.number,
-                        title: pr.title,
-                        author: pr.user.login, 
-                        commit_count: -1 // if error, just return -1
-                    })
-                }
-
+                )
             }
-
-            res.send(pullRequests) // TO DO: how to paginate? default length is 30
+            let results = await Promise.allSettled(promisesArray)
+            let pullRequests = []; // store final result
+            for (let i = 0; i < response.data.length; i++) {
+                pullRequests.push({
+                    id: response.data[i].id,
+                    number: response.data[i].number,
+                    title: response.data[i].title,
+                    author: response.data[i].user.login,
+                    commit_count: results[i].value?.data?.length ? results[i].value?.data?.length : -1 // if value was lost, -1 signifies error
+                })
+            }
+            return res.send(pullRequests) // TO DO: how to paginate? default length is 30
         }
         catch (error) {
-            console.log('error', error)
-            return res.sendStatus(500).send(error);
+            if (error.response.status == 404) {
+                return res.status(404).send("Repo Not Found");
+            }
+            return res.status(500).send(error);
         }
 
     });
